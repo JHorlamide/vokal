@@ -1,13 +1,13 @@
 const dev = {
-  API_ENDPOINT_URL: "https://9e2d-102-89-22-39.eu.ngrok.io/api",
+  API_ENDPOINT_URL: "https://8d01-102-89-34-227.eu.ngrok.io/api",
 };
 
 const prod = {
-  API_ENDPOINT_URL: "https://9e2d-102-89-22-39.eu.ngrok.io/api",
+  API_ENDPOINT_URL: "https://8d01-102-89-34-227.eu.ngrok.io/api",
 };
 
 const test = {
-  API_ENDPOINT_URL: "https://9e2d-102-89-22-39.eu.ngrok.io/api",
+  API_ENDPOINT_URL: "https://8d01-102-89-34-227.eu.ngrok.io/api",
 };
 
 const getEnv = () => {
