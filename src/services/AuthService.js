@@ -12,7 +12,7 @@ AuthService.login = function (data) {
 
 AuthService.register = function (data) {
 	return fetch({
-		url: '/auth/register',
+		url: '/users/register',
 		method: 'post',
 		data: data
 	})

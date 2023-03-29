@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
-import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import { LockOutlined, MailOutlined, UserAddOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Alert } from "antd";
 import {
   signUp,
@@ -12,6 +12,13 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const rules = {
+  name: [
+    {
+      required: true,
+      message: "Please input your name",
+    },
+  ],
+
   email: [
     {
       required: true,
@@ -48,7 +55,7 @@ export const RegisterForm = (props) => {
   const {
     signUp,
     showLoading,
-    token,
+    user,
     loading,
     redirect,
     message,
@@ -73,9 +80,11 @@ export const RegisterForm = (props) => {
   };
 
   useEffect(() => {
-    if (token !== null && allowRedirect) {
+    if (user !== null && allowRedirect) {
+      console.log([redirect]);
       navigate(redirect);
     }
+
     if (showMessage) {
       const timer = setTimeout(() => hideAuthMessage(), 3000);
       return () => {
@@ -101,9 +110,14 @@ export const RegisterForm = (props) => {
         name="register-form"
         onFinish={onSignUp}
       >
+        <Form.Item name="name" label="Name" rules={rules.name} hasFeedback>
+          <Input prefix={<UserAddOutlined className="text-primary" />} />
+        </Form.Item>
+
         <Form.Item name="email" label="Email" rules={rules.email} hasFeedback>
           <Input prefix={<MailOutlined className="text-primary" />} />
         </Form.Item>
+
         <Form.Item
           name="password"
           label="Password"
@@ -112,9 +126,10 @@ export const RegisterForm = (props) => {
         >
           <Input.Password prefix={<LockOutlined className="text-primary" />} />
         </Form.Item>
+
         <Form.Item
-          name="confirm"
-          label="ConfirmPassword"
+          name="confirmPassword"
+          label="confirmPassword"
           rules={rules.confirm}
           hasFeedback
         >
@@ -131,8 +146,8 @@ export const RegisterForm = (props) => {
 };
 
 const mapStateToProps = ({ auth }) => {
-  const { loading, message, showMessage, token, redirect } = auth;
-  return { loading, message, showMessage, token, redirect };
+  const { loading, message, showMessage, redirect, user } = auth;
+  return { loading, message, showMessage, redirect, user };
 };
 
 const mapDispatchToProps = {

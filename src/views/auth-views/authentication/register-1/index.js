@@ -29,7 +29,7 @@ const RegisterOne = (props) => {
                 <div className="d-flex justify-content-center">
                   <p>
                     Already have an account?{" "}
-                    <Link to={`${APP_PREFIX_PATH}/register-1`}>Sign In</Link>
+                    <Link to={`${APP_PREFIX_PATH}/auth/login`}>Sign In</Link>
                   </p>
                 </div>
                 <Row justify="center">

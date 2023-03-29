@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { AUTH_REFRESH_TOKEN, AUTH_TOKEN } from "constants/AuthConstant";
 import FirebaseService from "services/FirebaseService";
 import AuthService from "services/AuthService";
+import { APP_PREFIX_PATH } from "configs/AppConfig";
 
 export const initialState = {
   loading: false,
@@ -44,20 +45,22 @@ export const signIn = createAsyncThunk(
 export const signUp = createAsyncThunk(
   "auth/signUp",
   async (data, { rejectWithValue }) => {
-    const { email, password } = data;
     try {
-      const response = await FirebaseService.signUpEmailRequest(
-        email,
-        password
-      );
-      if (response.user) {
-        const token = response.user.refreshToken;
-        localStorage.setItem(AUTH_TOKEN, response.user.refreshToken);
-        return token;
-      } else {
-        return rejectWithValue(response.message?.replace("Firebase: ", ""));
+      const response = await AuthService.register({ ...data });
+
+      if (response.status === "Success") {
+        const { data } = response;
+        const user = { name: data.name, email: data.email };
+        return { user };
       }
+
+      return rejectWithValue(response.message?.replace("Firebase: ", ""));
     } catch (err) {
+      if (err.response) {
+        const { message } = err.response.data;
+        return rejectWithValue(message);
+      }
+
       return rejectWithValue(err.message || "Error");
     }
   }
@@ -134,6 +137,23 @@ export const authSlice = createSlice({
         state.loading = false;
       })
 
+      .addCase(signUp.pending, (state) => {
+        state.loading = true;
+      })
+
+      .addCase(signUp.fulfilled, (state, action) => {
+        const { payload } = action;
+        state.loading = false;
+        state.redirect = `${APP_PREFIX_PATH}/auth/login`;
+        state.user = payload;
+      })
+
+      .addCase(signUp.rejected, (state, action) => {
+        state.message = action.payload;
+        state.showMessage = true;
+        state.loading = false;
+      })
+
       .addCase(signOut.fulfilled, (state) => {
         state.loading = false;
         state.token = null;
@@ -146,22 +166,6 @@ export const authSlice = createSlice({
         state.token = null;
         state.user = null;
         state.redirect = "/";
-      })
-
-      .addCase(signUp.pending, (state) => {
-        state.loading = true;
-      })
-
-      .addCase(signUp.fulfilled, (state, action) => {
-        state.loading = false;
-        state.redirect = "/";
-        state.token = action.payload;
-      })
-
-      .addCase(signUp.rejected, (state, action) => {
-        state.message = action.payload;
-        state.showMessage = true;
-        state.loading = false;
       });
   },
 });

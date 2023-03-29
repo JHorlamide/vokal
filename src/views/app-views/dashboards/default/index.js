@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import Chart from "react-apexcharts";
-import { Row, Col, Card, Select, Button, Progress, Tooltip } from "antd";
+import { Row, Col, Card, Select, Button, Progress, Tooltip, Modal } from "antd";
 import {
   uniqueVisitorsDataWeek,
   uniqueVisitorsDataDay,
   uniqueVisitorsDataMonth,
 } from "../analytic/AnalyticDashboardData";
+import AssignTask from "./components/AssignTask";
 
 const { Option } = Select;
 
@@ -16,9 +17,24 @@ const customerExperiences = [
 ];
 
 export const DefaultDashboard = () => {
+  const [open, setOpen] = useState(false);
+  const [issueType, setIssueType] = useState("");
   const [uniqueVisitorsData, setUniqueVisitorsData] = useState(
     uniqueVisitorsDataWeek
   );
+
+  const showModal = (heading) => {
+    setIssueType(heading);
+    setOpen(true);
+  };
+
+  const handleOk = (e) => {
+    setOpen(false);
+  };
+
+  const handleCancel = (e) => {
+    setOpen(false);
+  };
 
   const handleVisitorsChartChange = (value) => {
     switch (value) {
@@ -39,6 +55,18 @@ export const DefaultDashboard = () => {
 
   return (
     <>
+      {open && (
+        <Modal
+          title={issueType}
+          open={open}
+          onOk={handleOk}
+          onCancel={handleCancel}
+          footer={[]}
+        >
+          <AssignTask issue={issueType} />
+        </Modal>
+      )}
+
       <Row gutter={16}>
         <Col xs={24} sm={24} md={24} lg={24} xxl={12}>
           <Card title="Number of Calls Analyzed">
@@ -108,7 +136,9 @@ export const DefaultDashboard = () => {
                   className="d-flex justify-content-between align-items-center pt-4"
                 >
                   <h4>{experience}</h4>
-                  <Button type="primary">Assign</Button>
+                  <Button type="primary" onClick={() => showModal(experience)}>
+                    Assign
+                  </Button>
                 </div>
               ))}
             </div>
